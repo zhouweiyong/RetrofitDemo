@@ -30,7 +30,11 @@ import retrofit2.Callback;
 import retrofit2.Converter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * xml解析使用：compile 'com.squareup.retrofit2:converter-simplexml:2.2.0'
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btn_post6;
     private Button btn_post7;
     private Button btn_post8;
+    private Button btn_post9;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_post7.setOnClickListener(this);
         btn_post8 = (Button) findViewById(R.id.btn_post8);
         btn_post8.setOnClickListener(this);
+        btn_post9 = (Button) findViewById(R.id.btn_post9);
+        btn_post9.setOnClickListener(this);
     }
 
     @Override
@@ -111,6 +118,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_post8:
                 post8();
+                break;
+            case R.id.btn_post9:
+                getInfo2();
                 break;
         }
     }
@@ -330,13 +340,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //提价json格式的请求参数
-    public void post8(){
+    public void post8() {
         try {
             VstService service = RetrofitWrapper.getInstance().create(VstService.class);
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("userName","TTTom");
-            jsonObject.put("age",16);
-            RequestBody requstBody = RequestBody.create(MediaType.parse("application/json"),jsonObject.toString());
+            jsonObject.put("userName", "TTTom");
+            jsonObject.put("age", 16);
+            RequestBody requstBody = RequestBody.create(MediaType.parse("application/json"), jsonObject.toString());
             Call<ResponseBody> call = service.post8(requstBody);
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
@@ -356,5 +366,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //get请求
+    public void getInfo2() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(VstService.HOST)
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
+        VstService service = retrofit.create(VstService.class);
+        service.getInfo2().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ResponseBody>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("zwy", e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        try {
+                            Log.i("zwy", responseBody.string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
     }
 }

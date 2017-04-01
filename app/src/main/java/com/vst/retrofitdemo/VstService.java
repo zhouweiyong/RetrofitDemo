@@ -22,6 +22,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import rx.Observable;
 
 /**
  * Query\Path\Field
@@ -63,4 +64,7 @@ public interface VstService {
     @Headers({"Content-Type: application/json","Accept: application/json"})
     @POST("account/post3")
     Call<ResponseBody> post8(@Body RequestBody params);
+
+    @GET("account/getinfo")
+    Observable<ResponseBody> getInfo2();
 }
