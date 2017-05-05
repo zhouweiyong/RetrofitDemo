@@ -366,6 +366,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     //get请求
@@ -386,6 +387,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onError(Throwable e) {
                         Log.i("zwy", e.getMessage());
+                        e.printStackTrace();
                     }
 
                     @Override
